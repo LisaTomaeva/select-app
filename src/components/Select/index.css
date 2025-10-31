@@ -1,9 +1,51 @@
+.select-block {
+  width: 300px;
+}
+
 .options-shown {
   display: block;
   overflow-y: scroll;
-  height: 500px;
+  max-height: 250px;
+  border:1px solid grey;
 }
 
 .options-hidden {
   display: none;
+}
+
+.option {
+
+}
+
+.option:hover {
+  background-color: #f0f0f0;
+}
+
+form {
+  display:flex;
+  flex-direction:row;  
+  border:1px solid grey;
+  padding:1px;
+  width: 300px;
+}
+
+/* кнопка удаления */
+
+input {
+  flex-grow:2;
+  border:none;
+}
+
+input:focus {
+  outline: none;
+}
+
+form:focus-within { 
+  outline: 1px solid grey 
+}
+
+button {
+  border:1px solid grey;
+  background:grey;
+  color:white;
 }

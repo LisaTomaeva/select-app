@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
+import './index.css';
 
 const Button = () => {
 
+  const handleSendClick = () => {
+    console.log('value sent');
+  }
+
   return (
-    <div>
+    <div className='send-button' onClick={() => handleSendClick()}>
+      Отправить
     </div>
   );
 }

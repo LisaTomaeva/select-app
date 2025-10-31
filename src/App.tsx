@@ -1,11 +1,13 @@
 import React from 'react';
 import './App.css';
 import Select from './components/Select';
+import Button from './components/Button';
 
 function App() {
   return (
-    <div>
+    <div className='main-block'>
       <Select />
+      <Button />
     </div>
   );
 }

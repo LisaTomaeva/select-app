@@ -1,15 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import "./index.css";
 import { useOnClickOutside } from '../../hooks/useClickOutside';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllOptions } from '../../features/select';
 
 const Select = () => {
 
   const [optionsVisible, setOptionVisible] = useState<boolean>(false);
   const [options, setOptions] = useState<Array<any>>([]);
+  const [value, setValue] = useState<string>('');
 
-  const buttonRef = useRef(null);
+  const selectRef = useRef(null);
+
+  const count = useSelector((state: any) => state.options);
+  const dispatch = useDispatch();
 
   const getOptions = async() => {
+      dispatch(getAllOptions());
       const response = await fetch('http://localhost:3001/selectList');
       const jsonData = await response.json();
       console.log(jsonData);
@@ -30,14 +37,27 @@ const Select = () => {
     setOptionVisible(false);
   };
 
-  useOnClickOutside(buttonRef, handleClickOutside);
+  const handleRemove = () => {
+    setValue('');
+  }
+
+  const handleSetValue = (value: string) => {
+    setValue(value);
+    console.log(value);
+    setOptionVisible(false);
+  }
+
+  useOnClickOutside(selectRef, handleClickOutside);
 
   return (
-    <div>
-      <button className='dropdown' ref={buttonRef} onClick={toggleOptions}>Select an option</button>
-      <div className={optionsVisible ? "options-visible" : 'options-hidden'}>
+    <div className='select-block' ref={selectRef}>
+      <form>
+        <input className='dropdown'onClick={toggleOptions} value={value}/>
+        <button>x</button>
+      </form>
+      <div className={optionsVisible ? "options-shown" : 'options-hidden'}>
         {options.map((item, index) => (
-          <div className='option' key={index} data-value='value1'>{item.value}</div>
+          <div className='option' key={index} data-value='value1' onClick={() => handleSetValue(item.value)}>{item.value}</div>
         ))}
       </div>
     </div>
