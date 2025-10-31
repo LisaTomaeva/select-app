@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import "./index.css";
 import { useOnClickOutside } from '../../hooks/useClickOutside';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllOptions } from '../../features/select';
+import { getAllOptions, getAllOptionsAsync } from '../../features/select';
 
 const Select = () => {
 
@@ -12,16 +12,18 @@ const Select = () => {
 
   const selectRef = useRef(null);
 
-  const count = useSelector((state: any) => state.options);
+  const storeOptions: Array<any> = useSelector((state: any) => state.options);
   const dispatch = useDispatch();
 
+
   const getOptions = async() => {
-      dispatch(getAllOptions());
-      const response = await fetch('http://localhost:3001/selectList');
-      const jsonData = await response.json();
-      console.log(jsonData);
-      setOptions(jsonData);
-      return jsonData;
+      const options = dispatch(getAllOptionsAsync());
+      // const response = await fetch('http://localhost:3001/selectList');
+      // const jsonData = await response.json();
+      // console.log(jsonData);
+      // setOptions(options);
+      console.log('options', options)
+      return options;
   }
 
   useEffect(() => {
@@ -37,7 +39,8 @@ const Select = () => {
     setOptionVisible(false);
   };
 
-  const handleRemove = () => {
+  const handleRemove = (event: any) => {
+    event.stopPropagation();
     setValue('');
   }
 
@@ -53,10 +56,10 @@ const Select = () => {
     <div className='select-block' ref={selectRef}>
       <form>
         <input className='dropdown'onClick={toggleOptions} value={value}/>
-        <button>x</button>
+        <button onClick={handleRemove}>x</button>
       </form>
       <div className={optionsVisible ? "options-shown" : 'options-hidden'}>
-        {options.map((item, index) => (
+        {storeOptions && storeOptions.map((item, index) => (
           <div className='option' key={index} data-value='value1' onClick={() => handleSetValue(item.value)}>{item.value}</div>
         ))}
       </div>

@@ -8,8 +8,8 @@ const Button = () => {
   }
 
   return (
-    <div className='send-button' onClick={() => handleSendClick()}>
-      Отправить
+    <div className='send-button' onClick={handleSendClick}>
+      <div className='send-button-text'>Отправить</div>
     </div>
   );
 }
