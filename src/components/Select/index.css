@@ -1,0 +1,9 @@
+.options-shown {
+  display: block;
+  overflow-y: scroll;
+  height: 500px;
+}
+
+.options-hidden {
+  display: none;
+}
