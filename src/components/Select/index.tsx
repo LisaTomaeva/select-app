@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import "./index.css";
 import { useOnClickOutside } from '../../hooks/useClickOutside';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getAllOptionsAsync, setSelectedOption } from '../../features/select';
 import { Option } from '../../types';
 import { filterOptions } from '../../utils/filterOptions';
@@ -16,9 +16,11 @@ const Select = ({ options }: SelectProps) => {
   const [searchString, setSearchString] = useState<string>('');
   const [value, setValue] = useState<string>('');
 
-  const selectRef = useRef(null);
+  const selectRef = useRef<HTMLInputElement>(null);
 
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  let timeoutId: any;
 
   const dispatch = useDispatch();
 
@@ -30,12 +32,23 @@ const Select = ({ options }: SelectProps) => {
     getOptions();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, []);
+
   const toggleOptions = () => {
     setOptionVisible(!optionsVisible);
   }
 
   const handleHideList = () => {
     setOptionVisible(false);
+        if (inputRef.current && inputRef.current.value !== value) {
+      inputRef.current.value = value;
+    }
   };
 
   const handleCloseButton = (event: any) => {
@@ -51,12 +64,23 @@ const Select = ({ options }: SelectProps) => {
   const handleSetValue = (value: string) => {
     setValue(value);
     setOptionVisible(false);
+    if (inputRef.current) {
+      inputRef.current.value = value;
+    }
     dispatch(setSelectedOption(value));
   }
 
-  // const filteredOptions = useMemo(() => {
-  //   return filterOptions(options, inputRef?.current.value || '');
-  // }, [searchString]);
+  const handleSearchString = (event: any) => {
+    timeoutId = setTimeout(() => {
+      setSearchString(event.target.value);
+      setValue(value);
+      dispatch(setSelectedOption(value));
+    }, 500);
+  }
+
+  const filteredOptions = useMemo(() => {
+    return searchString ? filterOptions(options, searchString || '') : options;
+  }, [searchString, options]);
 
   useOnClickOutside(selectRef, handleHideList);
 
@@ -68,8 +92,8 @@ const Select = ({ options }: SelectProps) => {
           ref={inputRef}
           className='dropdown'
           onClick={toggleOptions}
-          value={value}
-          // onChange={(event) => setSearchString(event.target.value)} 
+          // value={value}
+          onChange={(event) => handleSearchString(event)} 
         />
         <button onClick={handleRemove}>x</button>
         <button onClick={handleCloseButton}>
@@ -77,8 +101,8 @@ const Select = ({ options }: SelectProps) => {
         </button>
       </form>
       <div className={optionsVisible ? "options-shown" : 'options-hidden'}>
-        {options && options.map((item: Option, index: number) => (
-          <div className={item.value === value ? 'selectedOption' : 'option'} key={index} data-value='value1' onClick={() => handleSetValue(item.value)}>{item.name}</div>
+        {filteredOptions && filteredOptions.map((item: Option, index: number) => (
+          <div className={item.value === value ? 'selectedOption' : 'option'} key={index} data-value='value1' onClick={(event) => handleSetValue(item.value)}>{item.name}</div>
         ))}
       </div>
     </div>

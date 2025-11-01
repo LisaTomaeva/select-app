@@ -1,4 +1,5 @@
 import React from 'react';
+import './index.css';
 
 interface MessageProps {
   msg: string
@@ -6,9 +7,9 @@ interface MessageProps {
 
 function Message({ msg }: MessageProps) {
   return (
-    <>
+    <div className='messageBlock'>
       {msg || ''}
-    </>
+    </div>
   );
 }
 
