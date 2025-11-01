@@ -14,7 +14,7 @@ app.get('/options/for/select', (req, res) => {
 
   // Генерация списка
   for (let i = 1; i <= 1000; i++) {
-    list.push({key: i.toString(), value: i.toString()});
+    list.push({name: i.toString(), value: i.toString()});
   }
   res.status(200).json(list);
 })
