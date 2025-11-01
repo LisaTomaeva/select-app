@@ -1,14 +1,10 @@
 import React from 'react';
 import './App.css';
-import Select from './components/Select';
-import Button from './components/Button';
+import Main from './components/Main';
 
 function App() {
   return (
-    <div className='main-block'>
-      <Select />
-      <Button />
-    </div>
+    <Main />
   );
 }
 

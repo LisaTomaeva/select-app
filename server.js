@@ -7,7 +7,9 @@ app.use(cors());
 
 app.use(express.json());
 
-app.get('/selectList', (req, res) => {
+
+// Получение списка опций
+app.get('/options/for/select', (req, res) => {
   const list = [];
 
   // Генерация списка
@@ -15,6 +17,13 @@ app.get('/selectList', (req, res) => {
     list.push({key: i.toString(), value: i.toString()});
   }
   res.status(200).json(list);
+})
+
+// Сохранение опции
+app.post('/selected/option', (req, res) => {
+  res.status(200).json({
+    message: `Выбранная опция ${req.body.value} успешно принята.`
+  });
 })
 
 app.listen(port, () => {

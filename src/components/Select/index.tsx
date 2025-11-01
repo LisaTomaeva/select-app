@@ -2,32 +2,30 @@ import React, { useEffect, useRef, useState } from 'react';
 import "./index.css";
 import { useOnClickOutside } from '../../hooks/useClickOutside';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllOptions, getAllOptionsAsync } from '../../features/select';
+import { getAllOptionsAsync, setSelectedOption } from '../../features/select';
+import { Option } from '../../types';
 
 const Select = () => {
 
   const [optionsVisible, setOptionVisible] = useState<boolean>(false);
-  const [options, setOptions] = useState<Array<any>>([]);
+  const [options, setOptions] = useState<Array<Option>>([]);
   const [value, setValue] = useState<string>('');
 
   const selectRef = useRef(null);
 
-  const storeOptions: Array<any> = useSelector((state: any) => state.options);
+  const storeOptions: Array<any> = useSelector((state: any) => state.select.options);
   const dispatch = useDispatch();
 
 
-  const getOptions = async() => {
+  const getOptions = () => {
       const options = dispatch(getAllOptionsAsync());
-      // const response = await fetch('http://localhost:3001/selectList');
-      // const jsonData = await response.json();
-      // console.log(jsonData);
-      // setOptions(options);
-      console.log('options', options)
+      console.log('options', storeOptions);
+      setOptions(storeOptions);
       return options;
   }
 
   useEffect(() => {
-    getOptions();
+      getOptions();
   }, []);
 
   const toggleOptions = () => {
@@ -40,7 +38,7 @@ const Select = () => {
   };
 
   const handleRemove = (event: any) => {
-    event.stopPropagation();
+    event.preventDefault();
     setValue('');
   }
 
@@ -48,6 +46,7 @@ const Select = () => {
     setValue(value);
     console.log(value);
     setOptionVisible(false);
+    dispatch(setSelectedOption(value));
   }
 
   useOnClickOutside(selectRef, handleClickOutside);
