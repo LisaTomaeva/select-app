@@ -6,19 +6,23 @@
   display: block;
   overflow-y: scroll;
   max-height: 250px;
-  border:1px solid grey;
+  border: 1px solid grey;
 }
 
 .options-hidden {
   display: none;
 }
 
-.option {
+/* .option {
 
-}
+} */
 
 .option:hover {
   background-color: #f0f0f0;
+}
+
+.selectedOption {
+  background-color: #dedede;
 }
 
 form {
@@ -34,7 +38,6 @@ form {
 input {
   flex-grow:2;
   border: none;
-  height: 20px;
 }
 
 input:focus {
@@ -42,11 +45,17 @@ input:focus {
 }
 
 form:focus-within { 
-  outline: 1px solid grey 
+  outline: 1px solid grey;
+  border-bottom: 2px solid #0066cc;
+}
+
+button:hover {
+  border: 1px solid grey;
+  background:grey;
+  color:white;
+  display: flex;
 }
 
 button {
-  border:1px solid grey;
-  background:grey;
-  color:white;
+  display: none;
 }

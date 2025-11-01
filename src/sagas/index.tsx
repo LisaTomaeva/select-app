@@ -12,7 +12,6 @@ import { Action } from 'redux-saga';
 
     function* saveOptionAsyncSaga(action: any): any {
       const { payload } = action;
-      console.log('VAL', payload, action);
       const response = yield fetch('http://localhost:3001/selected/option', {
         method: 'POST',
         headers: {

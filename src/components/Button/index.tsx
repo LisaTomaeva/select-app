@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import './index.css';
 import { useDispatch, useSelector } from 'react-redux';
 
-const Button = () => {
+interface ButtonProps {
+  text: string
+}
+
+const Button = ({ text }: ButtonProps) => {
   const dispatch = useDispatch();
   const selectedOption: Array<any> = useSelector((state: any) => state.select.selectedOption);
 
@@ -14,7 +18,9 @@ const Button = () => {
 
   return (
     <div className='send-button' onClick={handleSendClick}>
-      <div className='send-button-text'>Отправить</div>
+      <div className='send-button-text'>
+        {text}
+      </div>
     </div>
   );
 }

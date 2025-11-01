@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Store } from '../../types';
+import { SelectState } from '../../types';
 
     export const select = createSlice({
       name: 'select',
@@ -9,15 +9,15 @@ import { Store } from '../../types';
         selectedOption: '',
       },
       reducers: {
-        getAllOptions: (state: Store, action: any) => {
+        getAllOptions: (state: SelectState, action: any) => {
           state.options = action.payload;
         },
-        getAllOptionsAsync: (state: Store) => {},
+        getAllOptionsAsync: (state: SelectState) => {},
         sendOption: (state, action) => {
           state.saveStatusMsg = action.payload.message;
         },
-        sendOptionAsync: (state: Store) => {},
-        setSelectedOption: (state: Store, action) => {
+        sendOptionAsync: (state: SelectState) => {},
+        setSelectedOption: (state: SelectState, action) => {
           state.selectedOption = action.payload;
         }
       },
