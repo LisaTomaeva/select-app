@@ -1,7 +1,7 @@
-import React, { ChangeEvent, use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import "./index.css";
 import { useOnClickOutside } from '../../hooks/useClickOutside';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getAllOptionsAsync, setSelectedOption } from '../../features/select';
 import { Option } from '../../types';
 import { filterOptions } from '../../utils/filterOptions';
