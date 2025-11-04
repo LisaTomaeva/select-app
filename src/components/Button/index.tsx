@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './index.css';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,7 +9,6 @@ interface ButtonProps {
 const Button = ({ text }: ButtonProps) => {
   const dispatch = useDispatch();
   const selectedOption: Array<any> = useSelector((state: any) => state.select.selectedOption);
-
 
   const handleSendClick = () => {
     console.log('value sent');

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { ChangeEvent, use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import "./index.css";
 import { useOnClickOutside } from '../../hooks/useClickOutside';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,21 +12,28 @@ interface SelectProps {
 
 const Select = ({ options }: SelectProps) => {
   const [optionsVisible, setOptionVisible] = useState<boolean>(false);
-  // const [filteredOptions, setFilteredOptions] = useState<Array<Option>>(options);
   const [searchString, setSearchString] = useState<string>('');
+  let [selectedByScrollIndex, setSelectedByScrollIndex] = useState<number>(0);
   const [value, setValue] = useState<string>('');
-
+  const [deleteButtonClass, setDeleteButtonClass] = useState('delete-button-hidden');
   const selectRef = useRef<HTMLInputElement>(null);
-
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollContainerRef = useRef<HTMLInputElement>(null);
 
   let timeoutId: any;
+  const scrollAmount = 18.4;
 
   const dispatch = useDispatch();
 
   const getOptions = () => {
     dispatch(getAllOptionsAsync());
-  }
+  };
+
+  const filteredOptions = useMemo(() => {
+    return searchString ? filterOptions(options, searchString || '') : options;
+  }, [searchString, options]);
+
+  const optionsValues: Array<string> = useMemo(() => filteredOptions?.map((item: Option, index: number) => item.value), [filteredOptions]);
 
   useEffect(() => {
     getOptions();
@@ -40,27 +47,78 @@ const Select = ({ options }: SelectProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    const listener = (event: any) => {
+      if (!scrollContainerRef.current || scrollContainerRef.current.contains(event.target)) {
+        return;
+      }
+      if (scrollContainerRef.current) {
+        if (event.key === 'ArrowUp') {
+          if (selectedByScrollIndex === 10) {
+              setSelectedByScrollIndex(selectedByScrollIndex--);
+              scrollContainerRef.current.scrollBy({ top: -scrollAmount*10, behavior: 'smooth' });
+            }
+          if (selectedByScrollIndex) {
+            setSelectedByScrollIndex(selectedByScrollIndex--);
+            scrollContainerRef.current.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+          } else if (selectedByScrollIndex === 0) {
+            setSelectedByScrollIndex(0);
+          }
+          event.preventDefault(); 
+        } else if (event.key === 'ArrowDown') {
+          console.log(selectedByScrollIndex, value, optionsValues.indexOf(value));
+            if (!value && !selectedByScrollIndex) {
+            setSelectedByScrollIndex(0);
+            } else {
+              if (selectedByScrollIndex >= 10) {
+                setSelectedByScrollIndex(selectedByScrollIndex++);
+                scrollContainerRef.current.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+              }
+              if (selectedByScrollIndex || selectedByScrollIndex === 0) {
+                setSelectedByScrollIndex(selectedByScrollIndex++);
+              }
+            event.preventDefault();
+          }
+        }
+      }
+    }
+    document.addEventListener('keydown', listener);
+
+    return () => {
+      document.removeEventListener('keydown', listener);
+    };
+  }, [scrollContainerRef, optionsValues, value]);
+
+  const handleShowDeleteButtonClass = () => {
+    setDeleteButtonClass('button');
+  }
+  
+  const handleHideDeleteButtonClass = () => {
+    setDeleteButtonClass('delete-button-hidden');
+  }
+
   const toggleOptions = () => {
     setOptionVisible(!optionsVisible);
   }
-
   const handleHideList = () => {
     setOptionVisible(false);
-        if (inputRef.current && inputRef.current.value !== value) {
+    if (inputRef.current && inputRef.current.value !== value) {
       inputRef.current.value = value;
     }
+    setSearchString('');
   };
-
   const handleCloseButton = (event: any) => {
     event.preventDefault();
     toggleOptions();
   }
-
   const handleRemove = (event: any) => {
     event.preventDefault();
     setValue('');
+    if (inputRef.current) {
+      inputRef.current.value = '';
+      setSearchString('');
+    }
   }
-
   const handleSetValue = (value: string) => {
     setValue(value);
     setOptionVisible(false);
@@ -68,8 +126,8 @@ const Select = ({ options }: SelectProps) => {
       inputRef.current.value = value;
     }
     dispatch(setSelectedOption(value));
+    setSelectedByScrollIndex(optionsValues.indexOf(value));
   }
-
   const handleSearchString = (event: any) => {
     timeoutId = setTimeout(() => {
       setSearchString(event.target.value);
@@ -78,35 +136,45 @@ const Select = ({ options }: SelectProps) => {
     }, 500);
   }
 
-  const filteredOptions = useMemo(() => {
-    return searchString ? filterOptions(options, searchString || '') : options;
-  }, [searchString, options]);
-
   useOnClickOutside(selectRef, handleHideList);
-
+    
   return (
     <div className='select-block' ref={selectRef}>
-      <form>
+      <form 
+        onMouseOver={handleShowDeleteButtonClass}
+        onMouseOut={handleHideDeleteButtonClass}
+      >
         <input 
           id="dropdown-input"
-          ref={inputRef}
+          ref={inputRef}   
           className='dropdown'
           onClick={toggleOptions}
-          // value={value}
-          onChange={(event) => handleSearchString(event)} 
-        />
-        <button onClick={handleRemove}>x</button>
+          type='number'
+          min={1}
+          onChange={(event: ChangeEvent) => handleSearchString(event)} 
+        />             
+        <button className={deleteButtonClass} onClick={handleRemove}>x</button>
         <button onClick={handleCloseButton}>
           &#9662;
         </button>
       </form>
-      <div className={optionsVisible ? "options-shown" : 'options-hidden'}>
+      <div ref={scrollContainerRef} tabIndex={0} className={optionsVisible ? "options-shown" : 'options-hidden'}>
         {filteredOptions && filteredOptions.map((item: Option, index: number) => (
-          <div className={item.value === value ? 'selectedOption' : 'option'} key={index} data-value='value1' onClick={(event) => handleSetValue(item.value)}>{item.name}</div>
+          <div className={
+            selectedByScrollIndex === optionsValues.indexOf(item.value) ? 
+            'option selectedByScrollOption' :
+            (value === item.value ? 'option selectedOption' : 'option')
+            } 
+            key={index} 
+            data-value='value1' 
+            onClick={(event) => handleSetValue(item.value)}
+          >
+            {item.name} {selectedByScrollIndex === optionsValues.indexOf(item.value) ? 'true' : 'false'}
+          </div>
         ))}
       </div>
     </div>
   );
-}
+  }
 
 export default Select;

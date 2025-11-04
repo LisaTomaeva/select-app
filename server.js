@@ -7,7 +7,6 @@ app.use(cors());
 
 app.use(express.json());
 
-
 // Получение списка опций
 app.get('/options/for/select', (req, res) => {
   const list = [];
@@ -24,6 +23,9 @@ app.post('/selected/option', (req, res) => {
   res.status(200).json({
     message: `Выбранная опция ${req.body.value} успешно принята.`
   });
+
+  // Отправка ошибки для тестов
+  // res.status(500).json({message: "Server not available! Try later."});
 })
 
 app.listen(port, () => {

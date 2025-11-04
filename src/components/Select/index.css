@@ -1,19 +1,28 @@
 .select-block {
   width: 250px;
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  align-items: anchor-center;
 }
 
 .options-shown {
   display: block;
   overflow-y: scroll;
-  max-height: 250px;
+  max-height: 185px;
   outline: 1px solid grey;
+  width: 100%;
+  z-index: 0;
+  background-color: white;
 }
 
 .options-hidden {
   display: none;
 }
 
-/* .option {} */
+.option {
+  cursor: pointer;
+}
 
 .option:hover {
   background-color: #f0f0f0;
@@ -23,12 +32,17 @@
   background-color: #dedede;
 }
 
+.selectedByScrollOption {
+  background-color: #e8e8e8;
+}
+
 form {
   display:flex;
   flex-direction:row;  
   border:1px solid grey;
   padding:1px;
   width: 250px;
+  height: auto;
 }
 
 /* кнопка удаления */
@@ -53,8 +67,15 @@ button {
   color:black;
   display: flex;
   width: 22px;
+  cursor: pointer;
 }
 
-button:hover {
-  background:#dedede;
+.delete-button-hidden {
+  opacity: 0;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
