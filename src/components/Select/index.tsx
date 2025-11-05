@@ -1,16 +1,17 @@
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import "./index.css";
 import { useOnClickOutside } from '../../hooks/useClickOutside';
-import { useDispatch } from 'react-redux';
-import { getAllOptionsAsync, setSelectedOption } from '../../features/select';
+import { setSelectedOption } from '../../features/select';
 import { Option } from '../../types';
 import { filterOptions } from '../../utils/filterOptions';
 
 interface SelectProps {
-  options: Array<Option>
+  options: Array<Option>;
+  getOptions: Function;
+  setSelectedOption: Function;
 }
 
-const Select = ({ options }: SelectProps) => {
+const Select = ({ options, getOptions, setSelectedOption }: SelectProps) => {
   const [optionsVisible, setOptionVisible] = useState<boolean>(false);
   const [searchString, setSearchString] = useState<string>('');
   let [selectedByScrollIndex, setSelectedByScrollIndex] = useState<number>(0);
@@ -22,12 +23,6 @@ const Select = ({ options }: SelectProps) => {
 
   let timeoutId: any;
   const scrollAmount = 18.4;
-
-  const dispatch = useDispatch();
-
-  const getOptions = () => {
-    dispatch(getAllOptionsAsync());
-  };
 
   const filteredOptions = useMemo(() => {
     return searchString ? filterOptions(options, searchString || '') : options;
@@ -120,6 +115,7 @@ const Select = ({ options }: SelectProps) => {
     if (inputRef.current) {
       inputRef.current.value = '';
       setSearchString('');
+      setSelectedOption('');
     }
   }
   const handleSetValue = (value: string) => {
@@ -128,7 +124,7 @@ const Select = ({ options }: SelectProps) => {
     if (inputRef.current) {
       inputRef.current.value = value;
     }
-    dispatch(setSelectedOption(value));
+    setSelectedOption(value);
     setSelectedByScrollIndex(optionsValues.indexOf(value));
   }
 
@@ -136,7 +132,7 @@ const Select = ({ options }: SelectProps) => {
     timeoutId = setTimeout(() => {
       setSearchString(event.target.value);
       setValue(value);
-      dispatch(setSelectedOption(value));
+      setSelectedOption(value);
     }, 500);
   }
 

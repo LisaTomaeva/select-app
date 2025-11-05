@@ -1,24 +1,16 @@
 import React from 'react';
 import './index.css';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 interface ButtonProps {
-  text: string
+  text: string,
+  selectedOption: string,
+  handleOnClick: Function,
 }
 
-const Button = ({ text }: ButtonProps) => {
-  const dispatch = useDispatch();
-  const selectedOption: Array<any> = useSelector((state: any) => state.select.selectedOption);
-
-  const handleSendClick = () => {
-    if (selectedOption) {
-      console.log('value sent');
-      dispatch({type: 'select/sendOptionAsync', payload: selectedOption});
-    }
-  }
-
+const Button = ({ text, handleOnClick, selectedOption }: ButtonProps) => {
   return (
-    <div className={selectedOption ? 'send-button' : 'send-button disabled'} onClick={handleSendClick}>
+    <div className={selectedOption ? 'send-button' : 'send-button disabled'} onClick={() => handleOnClick()}>
       <div className='send-button-text'>
         {text}
       </div>
