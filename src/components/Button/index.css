@@ -10,6 +10,16 @@
   border: 2px solid #0066cc;
 }
 
+.send-button.disabled {
+  border-color: grey;
+  color: grey;
+  cursor: not-allowed;
+}
+
+.send-button.disabled:hover {
+  border: 1px solid grey;
+}
+
 .send-button-text {
   padding: 1px 5px 1px 5px;
 }

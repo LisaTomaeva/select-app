@@ -143,6 +143,9 @@ const Select = ({ options }: SelectProps) => {
   const handleInputKeys = (event: KeyboardEvent) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      setOptionVisible(true);
     } else {
       return;
     }

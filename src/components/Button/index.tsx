@@ -11,12 +11,14 @@ const Button = ({ text }: ButtonProps) => {
   const selectedOption: Array<any> = useSelector((state: any) => state.select.selectedOption);
 
   const handleSendClick = () => {
-    console.log('value sent');
-    dispatch({type: 'select/sendOptionAsync', payload: selectedOption});
+    if (selectedOption) {
+      console.log('value sent');
+      dispatch({type: 'select/sendOptionAsync', payload: selectedOption});
+    }
   }
 
   return (
-    <div className='send-button' onClick={handleSendClick}>
+    <div className={selectedOption ? 'send-button' : 'send-button disabled'} onClick={handleSendClick}>
       <div className='send-button-text'>
         {text}
       </div>

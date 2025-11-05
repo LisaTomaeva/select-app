@@ -1,7 +1,8 @@
 import { takeEvery, put } from 'redux-saga/effects';
+import { SELECT_OPTIONS_URL, SEND_OPTION_URL } from '../consts';
 
 function* getOptionsAsyncSaga(): any {
-  const response = yield fetch('http://localhost:3001/options/for/select');
+  const response = yield fetch(SELECT_OPTIONS_URL);
   const jsonData = yield response.json();
   yield put({type: 'select/getAllOptions', payload: jsonData});
   return jsonData;
@@ -10,7 +11,7 @@ function* getOptionsAsyncSaga(): any {
 function* saveOptionAsyncSaga(action: any): any {
   const { payload } = action;
   try {
-    const response = yield fetch('http://localhost:3001/selected/option', {
+    const response = yield fetch(SEND_OPTION_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
