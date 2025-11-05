@@ -33,7 +33,7 @@ const Select = ({ options }: SelectProps) => {
     return searchString ? filterOptions(options, searchString || '') : options;
   }, [searchString, options]);
 
-  const optionsValues: Array<string> = useMemo(() => filteredOptions?.map((item: Option, index: number) => item.value), [filteredOptions]);
+  const optionsValues: Array<string> = useMemo(() => filteredOptions?.map((item: Option) => item.value), [filteredOptions]);
 
   useEffect(() => {
     getOptions();
@@ -54,39 +54,41 @@ const Select = ({ options }: SelectProps) => {
       }
       if (scrollContainerRef.current) {
         if (event.key === 'ArrowUp') {
-          if (selectedByScrollIndex === 10) {
-              setSelectedByScrollIndex(selectedByScrollIndex--);
-              scrollContainerRef.current.scrollBy({ top: -scrollAmount*10, behavior: 'smooth' });
-            }
-          if (selectedByScrollIndex) {
-            setSelectedByScrollIndex(selectedByScrollIndex--);
+          if (selectedByScrollIndex ===0) {
+            return;
+          } else if (selectedByScrollIndex === 10) {
+            setSelectedByScrollIndex(--selectedByScrollIndex);
+          scrollContainerRef.current.scrollBy({ top: -scrollAmount*10, behavior: 'smooth' });
+          } else if (selectedByScrollIndex) {
+            setSelectedByScrollIndex(--selectedByScrollIndex);
             scrollContainerRef.current.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
           } else if (selectedByScrollIndex === 0) {
-            setSelectedByScrollIndex(0);
+            setSelectedByScrollIndex(1);
           }
           event.preventDefault(); 
         } else if (event.key === 'ArrowDown') {
-          console.log(selectedByScrollIndex, value, optionsValues.indexOf(value));
-            if (!value && !selectedByScrollIndex) {
-            setSelectedByScrollIndex(0);
-            } else {
-              if (selectedByScrollIndex >= 10) {
-                setSelectedByScrollIndex(selectedByScrollIndex++);
-                scrollContainerRef.current.scrollBy({ top: scrollAmount, behavior: 'smooth' });
-              }
-              if (selectedByScrollIndex || selectedByScrollIndex === 0) {
-                setSelectedByScrollIndex(selectedByScrollIndex++);
-              }
+            if (!value && !selectedByScrollIndex && selectedByScrollIndex !==0) {
+              setSelectedByScrollIndex(1);
+            } 
+            else if (selectedByScrollIndex === 9) {
+              setSelectedByScrollIndex(++selectedByScrollIndex);
+              scrollContainerRef.current.scrollBy({ top: scrollAmount*2, behavior: 'smooth' });
+            }
+            else if (selectedByScrollIndex >= 9) {
+              setSelectedByScrollIndex(++selectedByScrollIndex);
+              scrollContainerRef.current.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+            } else if (selectedByScrollIndex || selectedByScrollIndex === 0) {
+              setSelectedByScrollIndex(++selectedByScrollIndex);
+            }
             event.preventDefault();
           }
         }
       }
-    }
-    document.addEventListener('keydown', listener);
+      document.addEventListener('keydown', listener);
 
-    return () => {
-      document.removeEventListener('keydown', listener);
-    };
+      return () => {
+        document.removeEventListener('keydown', listener);
+      };
   }, [scrollContainerRef, optionsValues, value]);
 
   const handleShowDeleteButtonClass = () => {
@@ -105,7 +107,8 @@ const Select = ({ options }: SelectProps) => {
     if (inputRef.current && inputRef.current.value !== value) {
       inputRef.current.value = value;
     }
-    setSearchString('');
+    setSelectedByScrollIndex(0);
+    setSearchString(value);
   };
   const handleCloseButton = (event: any) => {
     event.preventDefault();
@@ -128,12 +131,21 @@ const Select = ({ options }: SelectProps) => {
     dispatch(setSelectedOption(value));
     setSelectedByScrollIndex(optionsValues.indexOf(value));
   }
+
   const handleSearchString = (event: any) => {
     timeoutId = setTimeout(() => {
       setSearchString(event.target.value);
       setValue(value);
       dispatch(setSelectedOption(value));
     }, 500);
+  }
+
+  const handleInputKeys = (event: KeyboardEvent) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+    } else {
+      return;
+    }
   }
 
   useOnClickOutside(selectRef, handleHideList);
@@ -151,6 +163,7 @@ const Select = ({ options }: SelectProps) => {
           onClick={toggleOptions}
           type='number'
           min={1}
+          onKeyDown={(event: any) => handleInputKeys(event)}
           onChange={(event: ChangeEvent) => handleSearchString(event)} 
         />             
         <button className={deleteButtonClass} onClick={handleRemove}>x</button>
@@ -169,7 +182,7 @@ const Select = ({ options }: SelectProps) => {
             data-value='value1' 
             onClick={(event) => handleSetValue(item.value)}
           >
-            {item.name} {selectedByScrollIndex === optionsValues.indexOf(item.value) ? 'true' : 'false'}
+            {item.name}
           </div>
         ))}
       </div>
