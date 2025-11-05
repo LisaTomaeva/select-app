@@ -15,6 +15,7 @@ app.get('/options/for/select', (req, res) => {
   for (let i = 1; i <= 1000; i++) {
     list.push({name: i.toString(), value: i.toString()});
   }
+  res.set('Cache-Control', 'no-cache');
   res.status(200).json(list);
 })
 
